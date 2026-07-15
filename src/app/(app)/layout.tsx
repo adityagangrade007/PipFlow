@@ -3,7 +3,9 @@ import { redirect } from "next/navigation";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { AppTopbar } from "@/components/layout/app-topbar";
 import { MobileTabBar } from "@/components/layout/mobile-tab-bar";
+import { Toaster } from "@/components/ui/sonner";
 import { getDashboardData } from "@/lib/mock/dashboard";
+import { QueryProvider } from "@/providers/query-provider";
 import { auth } from "@/server/auth";
 
 export default async function AppLayout({
@@ -29,9 +31,12 @@ export default async function AppLayout({
           }}
           notifications={notifications}
         />
-        <main className="flex-1 px-4 pt-6 pb-24 sm:px-6 md:pb-10">{children}</main>
+        <main className="flex-1 px-4 pt-6 pb-24 sm:px-6 md:pb-10">
+          <QueryProvider>{children}</QueryProvider>
+        </main>
       </div>
       <MobileTabBar />
+      <Toaster position="top-right" richColors closeButton />
     </div>
   );
 }

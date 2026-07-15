@@ -20,7 +20,7 @@ export interface AppNavItem {
 export const appNavItems: AppNavItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard, enabled: true },
   { label: "Portfolio", href: "/portfolio", icon: Wallet, enabled: false },
-  { label: "Bots", href: "/bots", icon: Bot, enabled: false },
+  { label: "Bots", href: "/bots", icon: Bot, enabled: true },
   { label: "Trades", href: "/trades", icon: LineChart, enabled: false },
   { label: "Analytics", href: "/analytics", icon: ChartPie, enabled: false },
   { label: "Notifications", href: "/notifications", icon: Bell, enabled: false },

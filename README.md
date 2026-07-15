@@ -18,6 +18,17 @@
 | Fonts | Geist Sans & Geist Mono via `next/font` |
 | Quality | ESLint (flat config) + Prettier + `prettier-plugin-tailwindcss` |
 
+## Quick demo (no database needed)
+
+```bash
+npm install
+npm run build && npm run start
+```
+
+Open [http://localhost:3000](http://localhost:3000) and sign in with the built-in demo account: **demo@pipflow.app / demo1234** (the login page has a "Fill in" button). You get the live dashboard, the trading API and full Remote EA Control — pause/resume/restart/emergency-stop bots and edit their risk settings. All trading data is simulated; open-trade P&L ticks every 5 seconds.
+
+> The demo account and the in-memory command queue are prototype conveniences. Registration/password reset need PostgreSQL (below); commands reset on server restart.
+
 ## Getting started
 
 Requires Node.js ≥ 20 (see `.nvmrc`) and a PostgreSQL database ([Neon](https://neon.tech) free tier works).

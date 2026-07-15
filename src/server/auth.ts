@@ -21,6 +21,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!parsed.success) return null;
 
         const email = parsed.data.email.toLowerCase();
+
+        // Built-in demo account for showcasing the prototype — works without
+        // a database. Remove when the product goes live.
+        if (email === "demo@pipflow.app" && parsed.data.password === "demo1234") {
+          return {
+            id: "usr-demo",
+            name: "Demo Trader",
+            email,
+            image: null,
+            role: "USER" as const,
+          };
+        }
         const user = await db.user.findUnique({ where: { email } });
         // No user, or an OAuth-only account without a password set.
         if (!user?.passwordHash) return null;

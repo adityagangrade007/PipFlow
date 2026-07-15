@@ -9,6 +9,7 @@ import { RecentTrades } from "@/components/dashboard/recent-trades";
 import { formatSignedCurrency } from "@/lib/format";
 import { getDashboardData } from "@/lib/mock/dashboard";
 import { auth } from "@/server/auth";
+import { getBots, INITIAL_BALANCE } from "@/server/services/mock-trading";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -18,15 +19,20 @@ export default async function DashboardPage() {
   const session = await auth();
   const data = getDashboardData();
   const { account } = data;
+  const pausedBot = getBots().find((bot) => bot.status === "PAUSED");
 
-  const floating = account.equity - account.balance;
+  const floating = account.floatingPnl;
+  const delta90 = ((account.balance - INITIAL_BALANCE) / INITIAL_BALANCE) * 100;
+  const monthBase = account.balance - account.monthProfit;
+  const todayBase = account.balance - account.todayProfit;
+  const weekTargetPct = Math.round((account.weekProfit / 1250) * 100);
 
   const kpis: KpiCardProps[] = [
     {
       label: "Balance",
       value: account.balance,
       kind: "currency",
-      deltaPercent: 20.6,
+      deltaPercent: Math.round(delta90 * 10) / 10,
       hint: "Past 90 days",
     },
     {
@@ -39,20 +45,20 @@ export default async function DashboardPage() {
       label: "Today's profit",
       value: account.todayProfit,
       kind: "signed-currency",
-      deltaPercent: 0.7,
-      hint: "12 trades today",
+      deltaPercent: Math.round((account.todayProfit / todayBase) * 1000) / 10,
+      hint: `${account.todayTrades} trades today`,
     },
     {
       label: "This week",
       value: account.weekProfit,
       kind: "signed-currency",
-      hint: "102% of $1,250 target",
+      hint: `${weekTargetPct}% of $1,250 target`,
     },
     {
       label: "This month",
       value: account.monthProfit,
       kind: "signed-currency",
-      deltaPercent: 8.8,
+      deltaPercent: Math.round((account.monthProfit / monthBase) * 1000) / 10,
       hint: "Past 30 days",
     },
     {
@@ -72,7 +78,7 @@ export default async function DashboardPage() {
       value: account.runningBots,
       kind: "integer",
       suffix: `/ ${account.totalBots}`,
-      hint: "Grid Master is paused",
+      hint: pausedBot ? `${pausedBot.name} is paused` : "All bots running",
     },
   ];
 
@@ -85,7 +91,9 @@ export default async function DashboardPage() {
           {firstName ? `Welcome back, ${firstName}` : "Dashboard"}
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Your portfolio at a glance — 3 bots running, all systems nominal.
+          Your portfolio at a glance — {account.runningBots} of {account.totalBots} bots
+          running, {account.openTrades} open{" "}
+          {account.openTrades === 1 ? "trade" : "trades"}.
         </p>
       </div>
 

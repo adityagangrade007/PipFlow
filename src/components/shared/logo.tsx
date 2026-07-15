@@ -9,7 +9,7 @@ export function LogoMark({ className }: { className?: string }) {
       aria-hidden
       className={cn(
         "flex size-7 items-center justify-center rounded-lg bg-primary text-primary-foreground",
-        className,
+        className
       )}
     >
       <svg viewBox="0 0 24 24" fill="none" className="size-4">
@@ -33,9 +33,7 @@ export function Logo({ className }: { className?: string }) {
       className={cn("flex items-center gap-2.5", className)}
     >
       <LogoMark />
-      <span className="text-[17px] font-semibold tracking-tight">
-        {siteConfig.name}
-      </span>
+      <span className="text-[17px] font-semibold tracking-tight">{siteConfig.name}</span>
     </Link>
   );
 }

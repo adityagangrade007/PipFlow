@@ -112,6 +112,25 @@ export function LoginForm() {
           </Button>
         </form>
       </Form>
+
+      <div className="bg-muted/40 mt-6 flex items-center justify-between gap-3 rounded-lg border p-3">
+        <p className="text-muted-foreground text-xs">
+          <span className="text-foreground font-medium">Demo account</span>
+          <br />
+          demo@pipflow.app · demo1234
+        </p>
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          onClick={() => {
+            form.setValue("email", "demo@pipflow.app");
+            form.setValue("password", "demo1234");
+          }}
+        >
+          Fill in
+        </Button>
+      </div>
     </AuthCard>
   );
 }

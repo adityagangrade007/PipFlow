@@ -83,6 +83,29 @@ export interface Bot {
   sparkline: number[];
 }
 
+export const COMMAND_TYPES = [
+  "START",
+  "PAUSE",
+  "RESUME",
+  "RESTART",
+  "EMERGENCY_STOP",
+  "UPDATE_CONFIG",
+] as const;
+export type CommandType = (typeof COMMAND_TYPES)[number];
+
+export type CommandStatus = "PENDING" | "ACKNOWLEDGED" | "EXECUTED" | "FAILED";
+
+export interface BotCommand {
+  id: string;
+  botId: string;
+  type: CommandType;
+  payload: Partial<BotConfig> | null;
+  status: CommandStatus;
+  error: string | null;
+  createdAt: string;
+  executedAt: string | null;
+}
+
 export interface TradesQueryInput {
   status?: TradeStatus;
   q?: string;
