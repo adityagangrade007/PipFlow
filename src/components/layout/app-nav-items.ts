@@ -19,10 +19,10 @@ export interface AppNavItem {
 
 export const appNavItems: AppNavItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard, enabled: true },
-  { label: "Portfolio", href: "/portfolio", icon: Wallet, enabled: false },
+  { label: "Portfolio", href: "/portfolio", icon: Wallet, enabled: true },
   { label: "Bots", href: "/bots", icon: Bot, enabled: true },
-  { label: "Trades", href: "/trades", icon: LineChart, enabled: false },
-  { label: "Analytics", href: "/analytics", icon: ChartPie, enabled: false },
-  { label: "Notifications", href: "/notifications", icon: Bell, enabled: false },
-  { label: "Settings", href: "/settings", icon: Settings, enabled: false },
+  { label: "Trades", href: "/trades", icon: LineChart, enabled: true },
+  { label: "Analytics", href: "/analytics", icon: ChartPie, enabled: true },
+  { label: "Notifications", href: "/notifications", icon: Bell, enabled: true },
+  { label: "Settings", href: "/settings", icon: Settings, enabled: true },
 ];

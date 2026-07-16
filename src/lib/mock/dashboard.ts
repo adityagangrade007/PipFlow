@@ -154,3 +154,40 @@ export function getDashboardData(now: Date = new Date()): DashboardData {
     notifications: buildNotifications(account, recentTrades, now),
   };
 }
+
+/** Extended feed for the notifications page — one entry per recent trade
+ *  event plus the periodic system notifications. Newest first. */
+export function getNotificationsFeed(now: Date = new Date()): NotificationItem[] {
+  const ts = now.getTime();
+  const account = getAccountSummary(ts);
+  const trades = getRecentTrades(24, ts);
+
+  const items: NotificationItem[] = trades.map((t) =>
+    t.status === "OPEN"
+      ? {
+          id: `nf-open-${t.id}`,
+          type: "TRADE_OPENED" as const,
+          title: `Trade opened · ${t.symbol}`,
+          body: `${t.bot} ${t.direction === "BUY" ? "bought" : "sold"} ${t.lots.toFixed(2)} lots at ${t.openPrice}.`,
+          createdAt: t.openedAt,
+          read: false,
+        }
+      : {
+          id: `nf-close-${t.id}`,
+          type: "TRADE_CLOSED" as const,
+          title: `Trade closed · ${t.symbol}`,
+          body: `${t.bot} closed ${t.lots.toFixed(2)} lots for ${formatSignedCurrency(t.profit)}${t.closeReason === "TP" ? " (take profit)" : t.closeReason === "SL" ? " (stop loss)" : ""}.`,
+          createdAt: t.closedAt ?? t.openedAt,
+          read: true,
+        }
+  );
+
+  items.push(
+    ...buildNotifications(account, trades, now).filter(
+      (n) => !n.id.startsWith("n-open") && !n.id.startsWith("n-close")
+    )
+  );
+  items.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  // The three most recent are unread, everything older has been seen.
+  return items.map((n, i) => ({ ...n, read: i > 2 }));
+}

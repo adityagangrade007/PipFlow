@@ -171,3 +171,11 @@ export function resetCommands(): void {
   commands = [];
   version++;
 }
+
+/** Most recent commands across all bots, newest first (admin command log). */
+export function listRecentCommands(now = Date.now(), limit = 50): BotCommand[] {
+  return commands
+    .slice(-limit)
+    .reverse()
+    .map((c) => toPublic(c, now));
+}

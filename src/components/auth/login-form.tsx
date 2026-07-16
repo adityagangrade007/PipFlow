@@ -113,9 +113,9 @@ export function LoginForm() {
         </form>
       </Form>
 
-      <div className="bg-muted/40 mt-6 flex items-center justify-between gap-3 rounded-lg border p-3">
-        <p className="text-muted-foreground text-xs">
-          <span className="text-foreground font-medium">Demo account</span>
+      <div className="mt-6 flex items-center justify-between gap-3 rounded-lg border bg-muted/40 p-3">
+        <p className="text-xs text-muted-foreground">
+          <span className="font-medium text-foreground">Demo account</span>
           <br />
           demo@pipflow.app · demo1234
         </p>

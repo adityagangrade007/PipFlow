@@ -25,6 +25,7 @@ interface AppTopbarProps {
     name: string | null;
     email: string | null;
     image: string | null;
+    role: string;
   };
   notifications: NotificationItem[];
 }
@@ -140,6 +141,17 @@ export function AppTopbar({ user, notifications }: AppTopbarProps) {
               </span>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link href="/profile">Profile</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/settings">Settings</Link>
+            </DropdownMenuItem>
+            {user.role === "ADMIN" ? (
+              <DropdownMenuItem asChild>
+                <Link href="/admin">Admin panel</Link>
+              </DropdownMenuItem>
+            ) : null}
             <DropdownMenuItem asChild>
               <Link href="/">Back to site</Link>
             </DropdownMenuItem>

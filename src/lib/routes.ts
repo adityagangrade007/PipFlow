@@ -14,13 +14,9 @@ export const PROTECTED_ROUTE_PREFIXES = [
   "/admin",
 ] as const;
 
-/** Auth pages — signed-in users are redirected away from these. */
-export const AUTH_ROUTES = [
-  "/login",
-  "/register",
-  "/forgot-password",
-  "/reset-password",
-] as const;
+/** Auth pages — signed-in users are redirected away from these.
+ *  (Password reset stays reachable while signed in, for profile security.) */
+export const AUTH_ROUTES = ["/login", "/register"] as const;
 
 /** Only allow same-origin relative callback URLs (prevents open redirects). */
 export function safeCallbackUrl(url: string | null | undefined): string {

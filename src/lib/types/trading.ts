@@ -164,3 +164,29 @@ export interface PortfolioData {
   allocation: AllocationSlice[];
   bots: BotBreakdown[];
 }
+
+export interface MonthlyPnlPoint {
+  month: string;
+  profit: number;
+}
+
+export interface SymbolStats {
+  symbol: SymbolCode;
+  trades: number;
+  winRate: number;
+  profit: number;
+  avgTrade: number;
+}
+
+export interface AnalyticsData {
+  totalProfit: number;
+  totalTrades: number;
+  winRate: number;
+  profitFactor: number;
+  maxDrawdown: number;
+  avgTrade: number;
+  bestDay: { date: string; profit: number };
+  worstDay: { date: string; profit: number };
+  monthly: MonthlyPnlPoint[];
+  bySymbol: SymbolStats[];
+}

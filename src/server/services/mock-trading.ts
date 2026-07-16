@@ -1,6 +1,7 @@
 import type {
   AccountSummary,
   AllocationSlice,
+  AnalyticsData,
   Bot,
   BotBreakdown,
   BotStatus,
@@ -8,11 +9,13 @@ import type {
   PortfolioData,
   PricePoint,
   SymbolCode,
+  SymbolStats,
   Trade,
   TradeListResult,
   TradeWithPath,
   TradesQueryInput,
 } from "@/lib/types/trading";
+import { SYMBOLS } from "@/lib/types/trading";
 import {
   getCommandsVersion,
   getConfigOverride,
@@ -648,4 +651,70 @@ export function getPortfolio(now = Date.now()): PortfolioData {
   }));
 
   return { account, allocation, bots: breakdown };
+}
+
+export function getAnalytics(now = Date.now()): AnalyticsData {
+  const { trades } = getTimeline(now);
+  const closed = trades.filter((t) => t.status === "CLOSED");
+  const wins = closed.filter((t) => t.profit > 0);
+  const grossWin = wins.reduce((s, t) => s + t.profit, 0);
+  const grossLoss = Math.abs(
+    closed.filter((t) => t.profit <= 0).reduce((s, t) => s + t.profit, 0)
+  );
+  const totalProfit = closed.reduce((s, t) => s + t.profit, 0);
+
+  // Max drawdown over the chronological cumulative P&L curve.
+  let cumulative = 0;
+  let peak = 0;
+  let maxDrawdown = 0;
+  for (const t of [...closed].sort((a, b) =>
+    (a.closedAt ?? "").localeCompare(b.closedAt ?? "")
+  )) {
+    cumulative += t.profit;
+    peak = Math.max(peak, cumulative);
+    maxDrawdown = Math.max(maxDrawdown, peak - cumulative);
+  }
+
+  // Monthly P&L, oldest → newest, last 4 calendar months including current.
+  const monthly = Array.from({ length: 4 }, (_, i) => {
+    const d = new Date(now);
+    d.setDate(1);
+    d.setMonth(d.getMonth() - (3 - i));
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    const label = d.toLocaleDateString("en-US", { month: "short" });
+    const profit = closed
+      .filter((t) => (t.closedAt ?? "").startsWith(key))
+      .reduce((s, t) => s + t.profit, 0);
+    return { month: label, profit: round(profit, 2) };
+  });
+
+  const daily = getDailyPnl(90, now);
+  const bestDay = daily.reduce((a, b) => (b.profit > a.profit ? b : a), daily[0]);
+  const worstDay = daily.reduce((a, b) => (b.profit < a.profit ? b : a), daily[0]);
+
+  const bySymbol: SymbolStats[] = SYMBOLS.map((symbol) => {
+    const symTrades = closed.filter((t) => t.symbol === symbol);
+    const symWins = symTrades.filter((t) => t.profit > 0);
+    const profit = symTrades.reduce((s, t) => s + t.profit, 0);
+    return {
+      symbol,
+      trades: symTrades.length,
+      winRate: symTrades.length ? round((symWins.length / symTrades.length) * 100, 1) : 0,
+      profit: round(profit, 2),
+      avgTrade: symTrades.length ? round(profit / symTrades.length, 2) : 0,
+    };
+  });
+
+  return {
+    totalProfit: round(totalProfit, 2),
+    totalTrades: closed.length,
+    winRate: closed.length ? round((wins.length / closed.length) * 100, 1) : 0,
+    profitFactor: grossLoss > 0 ? round(grossWin / grossLoss, 2) : 0,
+    maxDrawdown: round(maxDrawdown, 2),
+    avgTrade: closed.length ? round(totalProfit / closed.length, 2) : 0,
+    bestDay: { date: bestDay.date, profit: bestDay.profit },
+    worstDay: { date: worstDay.date, profit: worstDay.profit },
+    monthly,
+    bySymbol,
+  };
 }

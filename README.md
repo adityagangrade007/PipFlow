@@ -25,7 +25,13 @@ npm install
 npm run build && npm run start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) and sign in with the built-in demo account: **demo@pipflow.app / demo1234** (the login page has a "Fill in" button). You get the live dashboard, the trading API and full Remote EA Control — pause/resume/restart/emergency-stop bots and edit their risk settings. All trading data is simulated; open-trade P&L ticks every 5 seconds.
+Open [http://localhost:3000](http://localhost:3000) and sign in with a built-in demo account (the login page has a "Fill in" button):
+
+| Account | Email | Password |
+| --- | --- | --- |
+| Trader | demo@pipflow.app | demo1234 |
+| Admin (adds the admin panel) | admin@pipflow.app | admin1234 |
+ You get the live dashboard, the trading API and full Remote EA Control — pause/resume/restart/emergency-stop bots and edit their risk settings. All trading data is simulated; open-trade P&L ticks every 5 seconds.
 
 > The demo account and the in-memory command queue are prototype conveniences. Registration/password reset need PostgreSQL (below); commands reset on server restart.
 
@@ -95,16 +101,16 @@ src/
 
 Node version is pinned via `.nvmrc`; `main` should always build cleanly (`npm run build`).
 
-## Roadmap
+## Pages
 
-- [x] **Phase 1** — Foundation: design system, theming, landing page
-- [x] **Phase 2** — Authentication: Auth.js v5, Prisma + PostgreSQL, register/login/reset, protected routes
-- [x] **Phase 3** — App shell & dashboard: responsive sidebar/tab bar, KPI cards, equity & P&L charts, trade distribution, recent trades/notifications (mock data)
-- [ ] **Phase 4** — Simulation engine & trading bridge interface (replaces `src/lib/mock/`)
-- [ ] **Phase 5** — Bots & remote controls (command queue)
-- [ ] **Phase 6** — Trades, portfolio, analytics
-- [ ] **Phase 7** — Notifications, profile, settings
-- [ ] **Phase 8** — Admin panel & polish
+Landing · Login/Register/Password reset · Dashboard · Portfolio · Bots (remote EA control: start/pause/resume/restart/emergency stop + risk settings) · Trades (search, filters, pagination, live open positions) · Analytics · Notifications · Settings · Profile · Admin panel (role-gated).
+
+## Production notes
+
+- **PWA**: web manifest + installable icon; `robots.txt` and `sitemap.xml` are generated; app routes are noindexed.
+- **Accessibility**: skip-to-content link, aria labels on all icon buttons, `prefers-reduced-motion` respected, P&L never encoded by color alone.
+- **Error handling**: global and app-scoped error boundaries, route-level loading skeletons.
+- **Simulation**: all trading data is deterministic simulation (`src/server/services/mock-trading.ts`); the EA command queue is in-memory per instance and resets on restart. Both are designed to be swapped for the real MT4/MT5 bridge + database without frontend changes.
 
 ## License
 
